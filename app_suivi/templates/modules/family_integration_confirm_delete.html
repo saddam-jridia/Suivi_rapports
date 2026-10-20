@@ -1,0 +1,25 @@
+{% extends "base_user.html" %}
+
+{% block title %}تأكيد الحذف{% endblock %}
+
+{% block content %}
+
+<div style="max-width: 550px; margin: 50px auto; background: #fff; padding: 35px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; border-top: 4px solid #dc2626;">
+    <i class="fas fa-exclamation-triangle" style="font-size: 3.5rem; color: #dc2626; margin-bottom: 20px;"></i>
+    <h2 style="margin: 0 0 15px; color: #1a1a1a;">تأكيد الحذف</h2>
+    <p style="color: #666; margin-bottom: 25px;">هل أنت متأكد من حذف السجل التالي ؟</p>
+    <div style="background: #fafafa; padding: 15px; border-radius: 8px; margin-bottom: 25px;">
+        <strong>{{ record }}</strong>
+    </div>
+    <form method="post" style="display: flex; gap: 12px; justify-content: center;">
+        {% csrf_token %}
+        <button type="submit" style="background: #dc2626; color: #fff; border: none; padding: 12px 28px; border-radius: 8px; font-weight: 700; cursor: pointer;">
+            <i class="fas fa-trash"></i> نعم، احذف
+        </button>
+        <a href="{% url 'family_integration_list' %}" style="padding: 12px 28px; border: 2px solid #ddd; border-radius: 8px; text-decoration: none; color: #666; font-weight: 600;">
+            إلغاء
+        </a>
+    </form>
+</div>
+
+{% endblock %}

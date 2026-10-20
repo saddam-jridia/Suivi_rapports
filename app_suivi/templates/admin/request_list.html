@@ -1,0 +1,145 @@
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}طلبات التسجيل{% endblock %}
+
+{% block content %}
+
+<!-- Titre -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 12px;">
+    <h1 style="margin: 0; color: #1a1a1a; font-size: 1.6rem;">
+        <i class="fas fa-user-check" style="color: #b8860b; margin-left: 10px;"></i>
+        طلبات التسجيل
+    </h1>
+    {% if pending_count > 0 %}
+        <span style="background: #fef3c7; color: #92400e; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+            <i class="fas fa-clock"></i> {{ pending_count }} طلب في الانتظار
+        </span>
+    {% endif %}
+</div>
+
+<!-- Onglets -->
+<div style="display: flex; gap: 5px; margin-bottom: 20px; border-bottom: 2px solid #eee; flex-wrap: wrap;">
+    <a href="?status=pending"
+       style="padding: 12px 20px; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+              {% if status_filter == 'pending' %}color: #1a1a1a; border-bottom: 3px solid #b8860b;{% else %}color: #666; border-bottom: 3px solid transparent;{% endif %}
+              margin-bottom: -2px; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-clock"></i> في الانتظار
+        {% if pending_count %}<span style="background: #b8860b; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">{{ pending_count }}</span>{% endif %}
+    </a>
+    <a href="?status=approved"
+       style="padding: 12px 20px; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+              {% if status_filter == 'approved' %}color: #1a1a1a; border-bottom: 3px solid #b8860b;{% else %}color: #666; border-bottom: 3px solid transparent;{% endif %}
+              margin-bottom: -2px; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-check-circle"></i> مقبولة
+        {% if approved_count %}<span style="background: #b8860b; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">{{ approved_count }}</span>{% endif %}
+    </a>
+    <a href="?status=rejected"
+       style="padding: 12px 20px; text-decoration: none; font-weight: 600; font-size: 0.95rem;
+              {% if status_filter == 'rejected' %}color: #1a1a1a; border-bottom: 3px solid #b8860b;{% else %}color: #666; border-bottom: 3px solid transparent;{% endif %}
+              margin-bottom: -2px; display: inline-flex; align-items: center; gap: 8px;">
+        <i class="fas fa-times-circle"></i> مرفوضة
+        {% if rejected_count %}<span style="background: #b8860b; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.75rem;">{{ rejected_count }}</span>{% endif %}
+    </a>
+</div>
+
+<!-- Tableau -->
+<div style="background: #fff; border-radius: 12px; box-shadow: 0 4px 18px rgba(0,0,0,.06); border: 1px solid #eee; overflow: hidden;">
+
+{% if requests %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; min-width: 900px;">
+            <thead>
+                <tr style="background: #1a1a1a; color: #fff;">
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">المعرّف</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">الاسم الكامل</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">الولاية</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">الصفة</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">الهاتف</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">البريد</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">التاريخ</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">الحالة</th>
+                    <th style="padding: 15px 12px; text-align: right; font-weight: 600; font-size: 0.9rem; border-bottom: 2px solid #b8860b; white-space: nowrap;">الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for r in requests %}
+                <tr style="border-bottom: 1px solid #f0f0f0; transition: background 0.15s;"
+                    onmouseover="this.style.background='#fafafa'"
+                    onmouseout="this.style.background='#fff'">
+                    <td style="padding: 14px 12px;"><strong style="color: #b8860b; font-size: 1rem;">{{ r.delegate_code }}</strong></td>
+                    <td style="padding: 14px 12px;">{{ r.first_name }} {{ r.last_name }}</td>
+                    <td style="padding: 14px 12px;">{{ r.get_wilaya_display }}</td>
+                    <td style="padding: 14px 12px;">{{ r.get_role_display }}</td>
+                    <td style="padding: 14px 12px; color: #555;">{{ r.phone|default:"—" }}</td>
+                    <td style="padding: 14px 12px; color: #555; font-size: 0.85rem;">{{ r.email|default:"—" }}</td>
+                    <td style="padding: 14px 12px; color: #666; font-size: 0.85rem; white-space: nowrap;">
+                        {{ r.created_at|date:"Y-m-d H:i" }}
+                    </td>
+                    <td style="padding: 14px 12px;">
+                        {% if r.status == 'pending' %}
+                            <span style="background: #fef3c7; color: #92400e; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">
+                                <i class="fas fa-clock"></i> في الانتظار
+                            </span>
+                        {% elif r.status == 'approved' %}
+                            <span style="background: #d1fae5; color: #065f46; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">
+                                <i class="fas fa-check"></i> مقبول
+                            </span>
+                        {% else %}
+                            <span style="background: #fee2e2; color: #991b1b; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; white-space: nowrap;">
+                                <i class="fas fa-times"></i> مرفوض
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 14px 12px; white-space: nowrap;">
+                        {% if r.status == 'pending' %}
+                            <form method="post" action="{% url 'request_approve' r.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        onclick="return confirm('هل أنت متأكد من قبول هذا الطلب؟');"
+                                        style="background: #16a34a; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s;"
+                                        onmouseover="this.style.background='#15803d'; this.style.transform='translateY(-1px)'"
+                                        onmouseout="this.style.background='#16a34a'; this.style.transform='none'">
+                                    <i class="fas fa-check"></i> قبول
+                                </button>
+                            </form>
+                            <form method="post" action="{% url 'request_reject' r.pk %}" style="display:inline;" onsubmit="return askNote(this);">
+                                {% csrf_token %}
+                                <input type="hidden" name="note" class="note-hidden">
+                                <button type="submit"
+                                        style="background: #dc2626; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s;"
+                                        onmouseover="this.style.background='#b91c1c'; this.style.transform='translateY(-1px)'"
+                                        onmouseout="this.style.background='#dc2626'; this.style.transform='none'">
+                                    <i class="fas fa-times"></i> رفض
+                                </button>
+                            </form>
+                        {% else %}
+                            <small style="color: #999;">—</small>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div style="text-align: center; padding: 70px 20px; color: #999;">
+        <i class="fas fa-inbox" style="font-size: 3.5rem; color: #ddd; margin-bottom: 15px; display: block;"></i>
+        <p style="margin: 0; font-size: 1rem; font-weight: 500;">لا توجد طلبات في هذه الفئة</p>
+        <p style="margin-top: 8px; font-size: 0.85rem; color: #bbb;">
+            عندما يسجّل مندوب جديد، سيظهر طلبه هنا
+        </p>
+    </div>
+{% endif %}
+</div>
+
+<script>
+function askNote(form) {
+    const note = prompt("سبب الرفض (اختياري) :", "");
+    if (note === null) return false;
+    form.querySelector('.note-hidden').value = note;
+    return true;
+}
+</script>
+
+{% endblock %}

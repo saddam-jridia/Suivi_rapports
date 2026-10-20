@@ -1,0 +1,140 @@
+{% extends "base_user.html" %}
+{% load static %}
+{% block title %}{% if mode == 'create' %}إضافة تقرير{% else %}تعديل تقرير{% endif %}{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+    <h1 style="color: #1a1a1a; margin-bottom: 25px; font-size: 1.5rem;">
+        <i class="fas fa-bullhorn" style="color: #b8860b; margin-left: 10px;"></i>
+        {% if mode == 'create' %}إضافة تقرير جديد{% else %}تعديل التقرير{% endif %} — التظاهرات والاحتفالات
+    </h1>
+
+    <form method="post" style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        {% csrf_token %}
+
+        <!-- Général -->
+        <h3 style="color: #1a1a1a; padding-bottom: 10px; border-bottom: 2px solid #b8860b; margin-bottom: 20px;"><i class="fas fa-info-circle" style="color: #b8860b;"></i> معلومات عامة</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 25px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">الولاية *</label>
+                <select name="wilaya" required style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+                    <option value="">اختر الولاية</option>
+                    {% for code, name in wilayas %}<option value="{{ code }}" {% if record and record.wilaya == code %}selected{% endif %}>{{ name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">السنة *</label>
+                <input type="number" name="year" required value="{{ record.year|default:2026 }}" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+        </div>
+
+        <!-- تحديد المناسبات -->
+        <h3 style="color: #1a1a1a; padding-bottom: 10px; border-bottom: 2px solid #b8860b; margin-bottom: 20px;"><i class="fas fa-calendar-check" style="color: #b8860b;"></i> تحديد المناسبات المحتفى بها</h3>
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 25px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="women_day" id="women_day" {% if record.women_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="women_day" style="font-size: 0.9rem; cursor: pointer;">اليوم العالمي للمرأة (08 مارس)</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="human_rights_day" id="human_rights_day" {% if record.human_rights_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="human_rights_day" style="font-size: 0.9rem; cursor: pointer;">اليوم العربي لحقوق الإنسان (16 مارس)</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="productive_families_day" id="productive_families_day" {% if record.productive_families_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="productive_families_day" style="font-size: 0.9rem; cursor: pointer;">اليوم العربي للأسر المنتجة (15 مارس)</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="family_day" id="family_day" {% if record.family_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="family_day" style="font-size: 0.9rem; cursor: pointer;">اليوم العالمي للأسرة (15 ماي)</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="mothers_day" id="mothers_day" {% if record.mothers_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="mothers_day" style="font-size: 0.9rem; cursor: pointer;">عيد الأمهات (آخر أحد من شهر ماي)</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="elderly_abuse_day" id="elderly_abuse_day" {% if record.elderly_abuse_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="elderly_abuse_day" style="font-size: 0.9rem; cursor: pointer;">اليوم العالمي للوقاية من الإساءة لكبار السن</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="elderly_day" id="elderly_day" {% if record.elderly_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="elderly_day" style="font-size: 0.9rem; cursor: pointer;">01 أكتوبر اليوم العالمي لكبار السن</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="pink_october" id="pink_october" {% if record.pink_october %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="pink_october" style="font-size: 0.9rem; cursor: pointer;">شهر أكتوبر الوردي</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="rural_women_day" id="rural_women_day" {% if record.rural_women_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="rural_women_day" style="font-size: 0.9rem; cursor: pointer;">15 أكتوبر اليوم العالمي للمرأة في الريف</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="protection_month" id="protection_month" {% if record.protection_month %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="protection_month" style="font-size: 0.9rem; cursor: pointer;">شهر الحماية</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="violence_prevention_day" id="violence_prevention_day" {% if record.violence_prevention_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="violence_prevention_day" style="font-size: 0.9rem; cursor: pointer;">25 نوفمبر اليوم العالمي للوقاية من العنف</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="sixteen_days_activism" id="sixteen_days_activism" {% if record.sixteen_days_activism %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="sixteen_days_activism" style="font-size: 0.9rem; cursor: pointer;">16 يوم من الأنشطة للوقاية من العنف (25 نوفمبر - 10 ديسمبر)</label>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="national_family_day" id="national_family_day" {% if record.national_family_day %}checked{% endif %} style="width: 18px; height: 18px;">
+                <label for="national_family_day" style="font-size: 0.9rem; cursor: pointer;">11 ديسمبر اليوم الوطني للأسرة</label>
+            </div>
+        </div>
+
+        <!-- Crédits -->
+        <h3 style="color: #1a1a1a; padding-bottom: 10px; border-bottom: 2px solid #b8860b; margin-bottom: 20px;"><i class="fas fa-coins" style="color: #b8860b;"></i> الاعتمادات المخصصة لهذه التظاهرة</h3>
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 25px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📅 فواضل السنوات السابقة</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="previous_credits_committed" value="{{ record.previous_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="previous_credits_paid" value="{{ record.previous_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📆 اعتمادات السنة الحالية</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="current_credits_committed" value="{{ record.current_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="current_credits_paid" value="{{ record.current_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📊 مجموع الاعتمادات</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="total_credits_committed" value="{{ record.total_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="total_credits_paid" value="{{ record.total_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📈 نسبة الصرف (%)</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.01" name="consumption_rate_committed" value="{{ record.consumption_rate_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.01" name="consumption_rate_paid" value="{{ record.consumption_rate_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">💰 الاعتمادات المتبقية</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="remaining_credits_committed" value="{{ record.remaining_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="remaining_credits_paid" value="{{ record.remaining_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boutons -->
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <a href="{% url 'celebration_list' %}" style="padding: 12px 28px; border: 2px solid #ddd; border-radius: 8px; text-decoration: none; color: #666; font-weight: 600;">إلغاء</a>
+            <button type="submit" style="padding: 12px 28px; background: #1a1a1a; color: #fff; border: 2px solid #b8860b; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                <i class="fas fa-save"></i> {% if mode == 'create' %}إضافة{% else %}حفظ التعديلات{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

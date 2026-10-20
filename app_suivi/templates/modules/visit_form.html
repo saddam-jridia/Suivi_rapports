@@ -1,0 +1,129 @@
+{% extends "base_user.html" %}
+{% load static %}
+{% block title %}{% if mode == 'create' %}إضافة سجل{% else %}تعديل سجل{% endif %} - الزيارات{% endblock %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 0 auto;">
+    <h1 style="color: #1a1a1a; margin-bottom: 25px; font-size: 1.5rem;">
+        <i class="fas fa-clipboard-check" style="color: #b8860b; margin-left: 10px;"></i>
+        {% if mode == 'create' %}إضافة سجل جديد{% else %}تعديل السجل{% endif %} — الزيارات
+    </h1>
+
+    <form method="post" style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        {% csrf_token %}
+
+        <!-- Général -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 25px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">الولاية *</label>
+                <select name="wilaya" required style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+                    <option value="">اختر الولاية</option>
+                    {% for code, name in wilayas %}<option value="{{ code }}" {% if record and record.wilaya == code %}selected{% endif %}>{{ name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">السنة *</label>
+                <input type="number" name="year" required value="{{ record.year|default:2026 }}" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+        </div>
+
+        <!-- 1. مؤسسات خاضعة للإشراف -->
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid #b8860b;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <input type="checkbox" name="has_supervised_institutions" id="has_supervised_institutions" {% if record.has_supervised_institutions %}checked{% endif %} style="width: 20px; height: 20px;">
+                <label for="has_supervised_institutions" style="font-weight: 700; font-size: 1.1rem; cursor: pointer;">1. مؤسسات خاضعة للإشراف</label>
+            </div>
+            
+            <div style="padding-right: 30px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">i. اذكرها</label>
+                    <input type="text" name="supervised_institutions" value="{{ record.supervised_institutions|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">ii. موضوع الزيارة</label>
+                    <input type="text" name="supervised_topic" value="{{ record.supervised_topic|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">iii. تاريخها</label>
+                    <input type="text" name="supervised_date" value="{{ record.supervised_date|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. خارج الولاية -->
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid #b8860b;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" name="has_outside_visits" id="has_outside_visits" {% if record.has_outside_visits %}checked{% endif %} style="width: 20px; height: 20px;">
+                <label for="has_outside_visits" style="font-weight: 700; font-size: 1.1rem; cursor: pointer;">2. خارج الولاية</label>
+            </div>
+        </div>
+
+        <!-- 3. في الولاية: في هيكل عمومي -->
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid #b8860b;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <input type="checkbox" name="has_public_structure_visit" id="has_public_structure_visit" {% if record.has_public_structure_visit %}checked{% endif %} style="width: 20px; height: 20px;">
+                <label for="has_public_structure_visit" style="font-weight: 700; font-size: 1.1rem; cursor: pointer;">3. في الولاية: في هيكل عمومي</label>
+            </div>
+            
+            <div style="padding-right: 30px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">1. اذكره</label>
+                    <input type="text" name="public_structure_name" value="{{ record.public_structure_name|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">2. موضوع الاجتماع</label>
+                    <input type="text" name="public_structure_topic" value="{{ record.public_structure_topic|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">وتاريخه</label>
+                    <input type="text" name="public_structure_date" value="{{ record.public_structure_date|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. في الولاية: في مقر رئاسة -->
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid #b8860b;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <input type="checkbox" name="has_presidency_visit" id="has_presidency_visit" {% if record.has_presidency_visit %}checked{% endif %} style="width: 20px; height: 20px;">
+                <label for="has_presidency_visit" style="font-weight: 700; font-size: 1.1rem; cursor: pointer;">4. في الولاية: في مقر رئاسة</label>
+            </div>
+            
+            <div style="padding-right: 30px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">i. اذكرها</label>
+                    <input type="text" name="presidency_name" value="{{ record.presidency_name|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">ii. موضوع الاجتماع</label>
+                    <input type="text" name="presidency_topic" value="{{ record.presidency_topic|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">وتاريخه</label>
+                    <input type="text" name="presidency_date" value="{{ record.presidency_date|default:'' }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px;">
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. زيارات ميدانية -->
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 25px; border-right: 4px solid #b8860b;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <input type="checkbox" name="has_field_visits" id="has_field_visits" {% if record.has_field_visits %}checked{% endif %} style="width: 20px; height: 20px;">
+                <label for="has_field_visits" style="font-weight: 700; font-size: 1.1rem; cursor: pointer;">5. زيارات ميدانية</label>
+            </div>
+            
+            <div style="padding-right: 30px;">
+                <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 5px;">إذا كان الجواب بنعم (تفاصيل الزيارات، الأشغال...)</label>
+                <textarea name="field_visits_details" rows="3" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; font-family: inherit;">{{ record.field_visits_details|default:'' }}</textarea>
+            </div>
+        </div>
+
+        <!-- Boutons -->
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <a href="{% url 'visit_list' %}" style="padding: 12px 28px; border: 2px solid #ddd; border-radius: 8px; text-decoration: none; color: #666; font-weight: 600;">إلغاء</a>
+            <button type="submit" style="padding: 12px 28px; background: #1a1a1a; color: #fff; border: 2px solid #b8860b; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                <i class="fas fa-save"></i> {% if mode == 'create' %}إضافة{% else %}حفظ التعديلات{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

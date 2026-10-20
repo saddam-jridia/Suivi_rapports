@@ -1,0 +1,648 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منظومة التقارير الأسبوعية والشهرية والسنوية على المستوى الجهوي</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* ============ BASE ============ */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #1a1a1a;
+            --primary-2: #2c2c2c;
+            --gold: #b8860b;
+            --gold-light: #d4a520;
+            --bg: #eef1f5;
+            --text: #2c2c2c;
+            --green: #16a34a;
+            --blue: #2563eb;
+            --red: #dc2626;
+            --orange: #ea580c;
+            --purple: #7c3aed;
+            --pink: #db2777;
+            --teal: #0d9488;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Traditional Arabic', Tahoma, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            direction: rtl;
+        }
+
+        /* ============ NAVBAR ============ */
+        .top-nav {
+            background: var(--primary);
+            color: #fff;
+            padding: 14px 0;
+            border-bottom: 3px solid var(--gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .top-nav .inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .top-nav .brand {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .top-nav .brand i { color: var(--gold); font-size: 1.3rem; }
+
+        .top-nav .user-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.9rem;
+        }
+        .top-nav .user-info span { color: #ddd; display: flex; align-items: center; gap: 6px; }
+        .top-nav .user-info span i { color: var(--gold); }
+
+        .top-nav .btn-logout {
+            background: transparent;
+            border: 1.5px solid var(--gold);
+            color: var(--gold);
+            padding: 7px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s;
+        }
+        .top-nav .btn-logout:hover { background: var(--gold); color: #fff; }
+
+        /* ============ CONTAINER ============ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 25px;
+        }
+
+        /* ============ HEADER BANNER ============ */
+        .banner {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+            color: #fff;
+            border-radius: 14px;
+            padding: 30px 35px;
+            border-top: 4px solid var(--gold);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .banner h1 {
+            margin: 0 0 8px;
+            font-size: 1.6rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .banner h1 i { color: var(--gold); }
+        .banner p { margin: 0; color: #bbb; font-size: 0.95rem; }
+        .banner .user-badge {
+            background: rgba(184,134,11,0.15);
+            border: 1.5px solid var(--gold);
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        /* ============ STATS ============ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px;
+            border-right: 5px solid var(--gold);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.25s;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .stat-card .icon-circle {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .stat-card.blue    .icon-circle { background: #dbeafe; color: var(--blue); }
+        .stat-card.green   .icon-circle { background: #dcfce7; color: var(--green); }
+        .stat-card.orange  .icon-circle { background: #ffedd5; color: var(--orange); }
+        .stat-card.purple  .icon-circle { background: #ede9fe; color: var(--purple); }
+        .stat-card h3 { margin: 0 0 4px; font-size: 1.7rem; font-weight: 700; color: var(--primary); }
+        .stat-card p { margin: 0; color: #666; font-size: 0.85rem; }
+
+        /* ============ SECTION TITLES ============ */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 35px 0 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        .section-title h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .section-title .icon-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        /* ============ CARDS GRID ============ */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .module-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 22px;
+            border: 1px solid #e8e8e8;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.25s;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gold);
+            transition: width 0.25s;
+        }
+        .module-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+            border-color: var(--gold);
+        }
+        .module-card:hover::before { width: 8px; }
+
+        .module-card .icon-wrap {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 14px;
+        }
+        .module-card.blue   .icon-wrap { background: #dbeafe; color: var(--blue); }
+        .module-card.green  .icon-wrap { background: #dcfce7; color: var(--green); }
+        .module-card.red    .icon-wrap { background: #fee2e2; color: var(--red); }
+        .module-card.orange .icon-wrap { background: #ffedd5; color: var(--orange); }
+        .module-card.purple .icon-wrap { background: #ede9fe; color: var(--purple); }
+        .module-card.pink   .icon-wrap { background: #fce7f3; color: var(--pink); }
+        .module-card.teal   .icon-wrap { background: #ccfbf1; color: var(--teal); }
+
+        .module-card h3 {
+            margin: 0 0 6px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .module-card p {
+            margin: 0 0 14px;
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+            flex: 1;
+        }
+        .module-card .go {
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Badge "Bientôt" */
+        .badge-soon {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: #f3f4f6;
+            color: #6b7280;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        /* ============ ADMIN ONLY BADGE ============ */
+        .admin-banner {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1.5px solid var(--gold);
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #78350f;
+        }
+        .admin-banner i { font-size: 1.8rem; color: var(--gold); }
+        .admin-banner strong { display: block; font-size: 1rem; margin-bottom: 3px; }
+        .admin-banner small { color: #92400e; }
+        .admin-banner a {
+            margin-right: auto;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .admin-banner a:hover { background: var(--primary-2); transform: translateY(-1px); }
+
+        /* ============ FOOTER ============ */
+        footer {
+            text-align: center;
+            padding: 25px 15px;
+            color: #999;
+            font-size: 0.8rem;
+            margin-top: 30px;
+        }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .banner { padding: 22px; }
+            .banner h1 { font-size: 1.2rem; }
+            .container { padding: 20px 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- =================== NAVBAR =================== -->
+<nav class="top-nav">
+    <div class="inner">
+        <a href="{% url 'home' %}" class="brand">
+            <i class="fas fa-child"></i>
+            منظومة التقارير الأسبوعية والشهرية والسنوية على المستوى الجهوي 
+        </a>
+        <div class="user-info">
+            <span>
+                <i class="fas fa-user-circle"></i>
+                <strong style="color: var(--gold-light);">{{ user.first_name }} {{ user.last_name }}</strong>
+            </span>
+            {% if user.is_superuser or user.is_staff %}
+                <a href="{% url 'admin_dashboard' %}" class="btn-logout" style="border-color: #16a34a; color: #16a34a;">
+                    <i class="fas fa-shield-alt"></i> لوحة التحكم
+                </a>
+            {% endif %}
+            <a href="{% url 'logout' %}" class="btn-logout">
+                <i class="fas fa-sign-out-alt"></i> خروج
+            </a>
+        </div>
+    </div>
+</nav>
+
+<!-- =================== MAIN =================== -->
+<div class="container">
+
+    <!-- Bannière -->
+    <div class="banner">
+        <div>
+            <h1><i class="fas fa-tachometer-alt"></i> لوحة القيادة </h1>
+            <p>منظومة التقارير الأسبوعية والشهرية والسنوية على المستوى الجهوي — وزارة الأسرة والمرأة والطفولة وكبار السن</p>
+        </div>
+        <div class="user-badge">
+            <i class="fas fa-calendar-alt"></i>
+            <!-- Ajout de l'ID pour le script JS -->
+            <span id="arabic-date">{% now "j F Y" %}</span>
+        </div>
+    </div>
+
+    <!-- Bandeau admin -->
+    {% if user.is_superuser or user.is_staff %}
+    <div class="admin-banner">
+        <i class="fas fa-shield-alt"></i>
+        <div>
+            <strong>وضع الإدارة</strong>
+            <small>لديك صلاحيات كاملة للوصول إلى لوحة التحكم</small>
+        </div>
+        <a href="{% url 'admin_dashboard' %}">
+            <i class="fas fa-arrow-left"></i> الدخول للوحة الإدارة
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card blue">
+            <div class="icon-circle"><i class="fas fa-child"></i></div>
+            <div><h3>{{ total_children|default:"—" }}</h3><p>مؤسسات الطفولة</p></div>
+        </div>
+        <div class="stat-card green">
+            <div class="icon-circle"><i class="fas fa-users"></i></div>
+            <div><h3>{{ total_seniors|default:"—" }}</h3><p>مراكز كبار السن</p></div>
+        </div>
+        <div class="stat-card orange">
+            <div class="icon-circle"><i class="fas fa-female"></i></div>
+            <div><h3>{{ total_women|default:"—" }}</h3><p>برامج المرأة والأسرة</p></div>
+        </div>
+        <div class="stat-card purple">
+            <div class="icon-circle"><i class="fas fa-calendar-check"></i></div>
+            <div><h3>{{ total_events|default:"—" }}</h3><p>التظاهرات والأنشطة</p></div>
+        </div>
+    </div>
+
+    <!-- =================== 1. برنامج الطفولة =================== -->
+    <div class="section-title">
+        <div class="icon-badge"><i class="fas fa-child"></i></div>
+        <h2>1. برنامج الطفولة</h2>
+    </div>
+    <div class="cards-grid">
+        <a href="{% url 'rawdhatna_list' %}" class="module-card blue">
+            <div class="icon-wrap"><i class="fas fa-home"></i></div>
+            <h3> روضتنا في حومتنا</h3>
+            <p>متابعة رياض الأطفال المنخرطة — الاعتمادات، الدفعات، المستفيدين</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'autism_list' %}" class="module-card purple">
+            <div class="icon-wrap"><i class="fas fa-puzzle-piece"></i></div>
+            <h3> أطفال طيف التوحد</h3>
+            <p>متابعة برامج الأطفال ذوي اضطرابات طيف التوحد</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+    </div>
+
+    <!-- =================== 2. برنامج كبار السن =================== -->
+    <div class="section-title">
+        <div class="icon-badge"><i class="fas fa-user-friends"></i></div>
+        <h2>2. برنامج كبار السن</h2>
+    </div>
+    <div class="cards-grid">
+        <a href="{% url 'senior_family_list' %}" class="module-card green">
+            <div class="icon-wrap"><i class="fas fa-house-user"></i></div>
+            <h3> الإيداع العائلي</h3>
+            <p>متابعة حالات الإيداع العائلي لكبار السن</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+    </div>
+
+    <!-- =================== 3. برنامج المرأة والأسرة =================== -->
+    <div class="section-title">
+        <div class="icon-badge"><i class="fas fa-female"></i></div>
+        <h2>3. برنامج المرأة والأسرة وتكافؤ الفرص</h2>
+    </div>
+    <div class="cards-grid">
+        <a href="{% url 'family_integration_list' %}" class="module-card red">
+            <div class="icon-wrap"><i class="fas fa-hand-holding-heart"></i></div>
+            <h3> الإدماج الاقتصادي للأسر ذات الوضعيات الخاصة</h3>
+            <p>متابعة الأسر والمطالب والاعتمادات</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'mothers_dropout_list' %}" class="module-card orange">
+            <div class="icon-wrap"><i class="fas fa-school"></i></div>
+            <h3> أمهات التلاميذ المهددين بالانقطاع</h3>
+            <p>الإدماج الاقتصادي لأمهات التلاميذ المهددين</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'samda_list' %}" class="module-card pink">
+            <div class="icon-wrap"><i class="fas fa-shield-heart"></i></div>
+            <h3> برنامج "صامدة"</h3>
+            <p>الإدماج الاقتصادي للنساء المعنفات</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'rural_women_list' %}" class="module-card green">
+            <div class="icon-wrap"><i class="fas fa-seedling"></i></div>
+            <h3> النساء في الريف</h3>
+            <p>المجامع التنموية والأنشطة الاقتصادية</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'action_plan_list' %}" class="module-card teal">
+            <div class="icon-wrap"><i class="fas fa-map-marked-alt"></i></div>
+            <h3> خطة عمل لكل منطقة مشروع</h3>
+            <p>متابعة خطط العمل الجهوية</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'raedat_list' %}" class="module-card purple">
+            <div class="icon-wrap"><i class="fas fa-star"></i></div>
+            <h3> رائدات</h3>
+            <p>دعم المبادرة النسائية والقيادة</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'accompagnement_list' %}" class="module-card purple">
+            <div class="icon-wrap"><i class="fas fa-store"></i></div>
+            <h3> فضاءات المرافقة والتسويق</h3>
+            <p>مرافقة المنتوجات النسائية وتسهيل التسويق — التكوين والمواكبة</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+    </div>
+
+    <!-- =================== 4. التمكين الاجتماعي =================== -->
+    <div class="section-title">
+        <div class="icon-badge"><i class="fas fa-users-cog"></i></div>
+        <h2>4. التمكين الاجتماعي للأسر </h2>
+    </div>
+    <div class="cards-grid">
+        <a href="{% url 'family_cohesion_list' %}" class="module-card orange">
+            <div class="icon-wrap"><i class="fas fa-home"></i></div>
+            <h3>الخطة الوطنية للتماسك الأسري</h3>
+            <p>برامج التمكين الاجتماعي والتماسك</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+    </div>
+
+    <!-- =================== 5. المؤسسات والمشاريع الجهوية =================== -->
+    <div class="section-title">
+        <div class="icon-badge"><i class="fas fa-building"></i></div>
+        <h2>5. المؤسسات والمشاريع على المستوى الجهوي</h2>
+    </div>
+    <div class="cards-grid">
+        <a href="{% url 'family_space_list' %}" class="module-card teal">
+            <div class="icon-wrap"><i class="fas fa-couch"></i></div>
+            <h3>فضاءات الأسرة</h3>
+            <p>متابعة فضاءات الأسرة</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'family_guidance_list' %}" class="module-card blue">
+            <div class="icon-wrap"><i class="fas fa-comments"></i></div>
+            <h3>مركز إرشاد وتوجيه أسري</h3>
+            <p>الإرشاد والتوجيه الأسري</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'parent_accompaniment_list' %}" class="module-card purple">
+            <div class="icon-wrap"><i class="fas fa-hand-holding-heart"></i></div>
+            <h3> وحدة مرافقة الأولياء</h3>
+            <p>مرافقة أولياء ذوي اضطرابات التعلم</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'children_club_list' %}" class="module-card green">
+            <div class="icon-wrap"><i class="fas fa-people-roof"></i></div>
+            <h3> نوادي أطفال</h3>
+            <p>فضاءات الأطفال النشطة</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'integrated_center_list' %}" class="module-card orange">
+            <div class="icon-wrap"><i class="fas fa-layer-group"></i></div>
+            <h3> المراكز المندمجة</h3>
+            <p>متابعة المراكز المندمجة</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'elderly_center_list' %}" class="module-card teal">
+            <div class="icon-wrap"><i class="fas fa-house-medical"></i></div>
+            <h3> مراكز المسنين</h3>
+            <p>إحصائيات ونشاط المراكز</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'day_club_list' %}" class="module-card pink">
+            <div class="icon-wrap"><i class="fas fa-sun"></i></div>
+            <h3> النوادي النهارية</h3>
+            <p>أنشطة النوادي النهارية</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'childhood_complex_list' %}" class="module-card blue">
+            <div class="icon-wrap"><i class="fas fa-city"></i></div>
+            <h3> مركبات الطفولة</h3>
+            <p>إدارة مركبات الطفولة</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'child_it_center_list' %}" class="module-card purple">
+            <div class="icon-wrap"><i class="fas fa-laptop-code"></i></div>
+            <h3> مراكز الإعلامية للطفل</h3>
+            <p>مراكز الإعلامية الموجهة للطفل</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+    </div>
+
+    <!-- =================== 6. الأنشطة اليومية والأسبوعية =================== -->
+    <div class="section-title">
+        <div class="icon-badge"><i class="fas fa-calendar-star"></i></div>
+        <h2>6. الأنشطة اليومية والأسبوعية</h2>
+    </div>
+    <div class="cards-grid">
+        <a href="{% url 'weekly_activity_list' %}" class="module-card blue">
+            <div class="icon-wrap"><i class="fas fa-calendar-week"></i></div>
+            <h3> روزنامة الأنشطة الأسبوعية</h3>
+            <p>برمجة الأنشطة اليومية والأسبوعية</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'meeting_session_list' %}" class="module-card purple">
+            <div class="icon-wrap"><i class="fas fa-users"></i></div>
+            <h3> الاجتماعات وجلسات العمل</h3>
+            <p>جلسات اللجان والاجتماعات الدورية</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'visit_list' %}" class="module-card red">
+            <div class="icon-wrap"><i class="fas fa-clipboard-check"></i></div>
+            <h3> الزيارات</h3>
+            <p>الزيارات الميدانية للمتابعة</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+
+        <a href="{% url 'celebration_list' %}" class="module-card orange">
+            <div class="icon-wrap"><i class="fas fa-bullhorn"></i></div>
+            <h3> التظاهرات والاحتفالات</h3>
+            <p>الأيام الوطنية والعالمية</p>
+            <span class="go">دخول <i class="fas fa-arrow-left"></i></span>
+        </a>
+    </div>
+
+    <!-- =================== Footer =================== -->
+    <footer>
+        © {% now "Y" %} وزارة الأسرة والمرأة والطفولة وكبار السن — جميع الحقوق محفوظة
+    </footer>
+
+</div>
+
+<!-- Script pour convertir les chiffres de la date en chiffres arabes -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var dateElement = document.getElementById("arabic-date");
+        if (dateElement) {
+            // Remplacer chaque chiffre 0-9 par son équivalent arabe ٠-٩
+            dateElement.textContent = dateElement.textContent.replace(/[0-9]/g, function(d) {
+                return ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'][d];
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

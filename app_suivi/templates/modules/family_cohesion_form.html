@@ -1,0 +1,121 @@
+{% extends "base_user.html" %}
+{% load static %}
+{% block title %}{% if mode == 'create' %}إضافة سجل{% else %}تعديل سجل{% endif %} - التماسك الأسري{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+    <h1 style="color: #1a1a1a; margin-bottom: 25px; font-size: 1.5rem;">
+        <i class="fas fa-users-cog" style="color: #b8860b; margin-left: 10px;"></i>
+        {% if mode == 'create' %}إضافة سجل جديد{% else %}تعديل السجل{% endif %} — الخطة الوطنية للتماسك الأسري
+    </h1>
+
+    <form method="post" style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        {% csrf_token %}
+
+        <!-- Général -->
+        <h3 style="color: #1a1a1a; padding-bottom: 10px; border-bottom: 2px solid #b8860b; margin-bottom: 20px;"><i class="fas fa-info-circle" style="color: #b8860b;"></i> معلومات عامة</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 25px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">الولاية *</label>
+                <select name="wilaya" required style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+                    <option value="">اختر الولاية</option>
+                    {% for code, name in wilayas %}<option value="{{ code }}" {% if record and record.wilaya == code %}selected{% endif %}>{{ name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">السنة *</label>
+                <input type="number" name="year" required value="{{ record.year|default:2026 }}" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+        </div>
+
+        <!-- Crédits -->
+        <h3 style="color: #1a1a1a; padding-bottom: 10px; border-bottom: 2px solid #b8860b; margin-bottom: 20px;"><i class="fas fa-coins" style="color: #b8860b;"></i> الاعتمادات</h3>
+        <div style="background: #fafafa; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
+                <!-- Ligne 1 -->
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📅 فواصل نوات السابقة</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="previous_credits_committed" value="{{ record.previous_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="previous_credits_paid" value="{{ record.previous_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <!-- Ligne 2 -->
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📆 اعتمادات سنة الحالية</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="current_credits_committed" value="{{ record.current_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="current_credits_paid" value="{{ record.current_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <!-- Ligne 3 -->
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📊 مجموع الاعتمادات</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="total_credits_committed" value="{{ record.total_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="total_credits_paid" value="{{ record.total_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <!-- Ligne 4 -->
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">📈 نسبة الصرف (%)</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.01" name="consumption_rate_committed" value="{{ record.consumption_rate_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.01" name="consumption_rate_paid" value="{{ record.consumption_rate_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+                <!-- Ligne 5 -->
+                <div style="grid-column: 1 / -1;">
+                    <h4 style="margin: 0 0 12px; color: #666; font-size: 0.95rem;">💰 الاعتمادات المتبقية</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">تعهدا</label><input type="number" step="0.001" name="remaining_credits_committed" value="{{ record.remaining_credits_committed|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                        <div><label style="font-size: 0.85rem; font-weight: 600;">دفعا</label><input type="number" step="0.001" name="remaining_credits_paid" value="{{ record.remaining_credits_paid|default:0 }}" style="width: 100%; padding: 9px; border: 1.5px solid #ddd; border-radius: 6px; margin-top: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- المنتفعون والتنفيذ -->
+        <h3 style="color: #1a1a1a; padding-bottom: 10px; border-bottom: 2px solid #b8860b; margin-bottom: 20px; margin-top: 25px;"><i class="fas fa-users" style="color: #b8860b;"></i> المنتفعون والتنفيذ</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">عدد المنتفعين بخدمات</label>
+                <input type="number" name="beneficiaries_count" min="0" value="{{ record.beneficiaries_count|default:0 }}" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">مكتب الدراسات المعني بالتنفيذ</label>
+                <input type="text" name="consulting_firm" value="{{ record.consulting_firm|default:'' }}" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">مرحلة التنفيذ</label>
+                <select name="implementation_phase" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;">
+                    <option value="1" {% if record.implementation_phase == '1' %}selected{% endif %}>المرحلة الأولى</option>
+                    <option value="2" {% if record.implementation_phase == '2' %}selected{% endif %}>المرحلة الثانية</option>
+                    <option value="3" {% if record.implementation_phase == '3' %}selected{% endif %}>المرحلة الثالثة</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- تركيبة فريق العمل -->
+        <h3 style="color: #1a1a1a; padding-bottom: 10px; border-bottom: 2px solid #b8860b; margin-bottom: 20px; margin-top: 25px;"><i class="fas fa-user-tie" style="color: #b8860b;"></i> تركيبة فريق العمل</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px;">
+            <div><label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">مختص في علم الاجتماع</label><input type="number" name="team_sociologist" value="{{ record.team_sociologist|default:0 }}" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;"></div>
+            <div><label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">مختص في القانون</label><input type="number" name="team_legal" value="{{ record.team_legal|default:0 }}" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;"></div>
+            <div><label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">مختص في علم النفس</label><input type="number" name="team_psychologist" value="{{ record.team_psychologist|default:0 }}" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;"></div>
+            <div><label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">مختص في الصحة</label><input type="number" name="team_health" value="{{ record.team_health|default:0 }}" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;"></div>
+            <div style="grid-column: 1 / -1;">
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">اختصاصات أخرى (اذكرها)</label>
+                <input type="text" name="team_other_desc" value="{{ record.team_other_desc|default:'' }}" style="width: 100%; padding: 10px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+        </div>
+
+        <!-- Boutons -->
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <a href="{% url 'family_cohesion_list' %}" style="padding: 12px 28px; border: 2px solid #ddd; border-radius: 8px; text-decoration: none; color: #666; font-weight: 600;">إلغاء</a>
+            <button type="submit" style="padding: 12px 28px; background: #1a1a1a; color: #fff; border: 2px solid #b8860b; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                <i class="fas fa-save"></i> {% if mode == 'create' %}إضافة{% else %}حفظ التعديلات{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

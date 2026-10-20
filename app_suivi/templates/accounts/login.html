@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الدخول :: منظومة التقارير الأسبوعية والشهرية والسنوية على المستوى الجهوي    </title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="top-strip"></div>
+
+    <div class="login-wrapper">
+        <div class="login-container">
+
+            <!-- En-tête avec logo officiel -->
+            <div class="header">
+                <div class="emblem">
+                    <img src="{% static 'img/logo-ministere.png' %}"
+                         alt="شعار وزارة الأسرة والمرأة والطفولة وكبار السن">
+                </div>
+                <div class="header-divider"></div>
+                <p class="system">منظومة التقارير الدورية الجهويةالأسبوعية والشهرية والسنوية   </p>
+            </div>
+
+            {% if error %}
+                <div class="alert-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>{{ error }}</span>
+                </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'login' %}" class="login-form">
+                {% csrf_token %}
+
+                <div class="field">
+                    <label for="id_username">
+                        <i class="fas fa-user"></i> المستخدم
+                    </label>
+                    <input type="text" name="username" id="id_username"
+                           placeholder="أدخل اسم المستخدم" required autofocus>
+                </div>
+
+                <div class="field">
+                    <label for="id_password">
+                        <i class="fas fa-lock"></i> كلمة السر
+                    </label>
+                    <input type="password" name="password" id="id_password"
+                           placeholder="أدخل كلمة السر" required>
+                </div>
+
+                <button type="submit">
+                    <i class="fas fa-sign-in-alt"></i> دخول
+                </button>
+            </form>
+
+            <!-- Séparateur -->
+            <div class="separator"><span>أو</span></div>
+
+            <!-- Liens -->
+            <div class="form-footer-links">  
+                <a href="{% url 'register_delegate_public' %}">إنشاء حساب</a>
+            </div>
+
+            <!-- Formulaire caché pour changer la langue -->
+            <form id="lang-form" action="{% url 'set_language' %}" method="post" style="display:none;">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <input type="hidden" name="language" id="lang-input" value="">
+            </form>
+
+            <div class="footer-note">
+                <i class="fas fa-info-circle"></i>
+                في حال وجود مشكلة، يرجى التواصل مع الإدارة
+            </div>
+
+        </div>
+
+        <footer class="page-footer">
+            <p>© {{ "now"|date:"Y" }} وزارة الأسرة والمرأة والطفولة وكبار السن — جميع الحقوق محفوظة</p>
+        </footer>
+    </div>
+
+    <script>
+    function setLang(lang) {
+        document.getElementById('lang-input').value = lang;
+        document.getElementById('lang-form').submit();
+    }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+{% extends "base_user.html" %}
+{% load static %}
+{% block title %}{% if mode == 'create' %}إضافة نشاط{% else %}تعديل نشاط{% endif %}{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h1 style="color: #1a1a1a; margin-bottom: 25px; font-size: 1.5rem;">
+        <i class="fas fa-calendar-week" style="color: #b8860b; margin-left: 10px;"></i>
+        {% if mode == 'create' %}إضافة نشاط جديد{% else %}تعديل النشاط{% endif %}
+    </h1>
+
+    <form method="post" style="background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        {% csrf_token %}
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">الولاية *</label>
+                <select name="wilaya" required style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+                    <option value="">اختر الولاية</option>
+                    {% for code, name in wilayas %}<option value="{{ code }}" {% if record and record.wilaya == code %}selected{% endif %}>{{ name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">النهار *</label>
+                <select name="day" required style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+                    <option value="">اختر اليوم</option>
+                    {% for code, name in days %}<option value="{{ code }}" {% if record and record.day == code %}selected{% endif %}>{{ name }}</option>{% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">الساعة *</label>
+                <input type="time" name="time" required value="{{ record.time|time:'H:i'|default:'' }}" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">التاريخ (اختياري)</label>
+                <input type="date" name="date" value="{{ record.date|date:'Y-m-d'|default:'' }}" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">النشاط *</label>
+            <input type="text" name="activity_name" required value="{{ record.activity_name|default:'' }}" placeholder="مثال: ورشة رسم للأطفال" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 20px;">
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">الفئات المعنية *</label>
+                <input type="text" name="target_audience" required value="{{ record.target_audience|default:'' }}" placeholder="مثال: أطفال 6-12 سنة" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+            <div>
+                <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">المكان *</label>
+                <input type="text" name="location" required value="{{ record.location|default:'' }}" placeholder="مثال: قاعة الأنشطة" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px;">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 30px;">
+            <label style="display: block; font-weight: 600; margin-bottom: 6px; font-size: 0.9rem;">الملاحظات</label>
+            <textarea name="notes" rows="3" style="width: 100%; padding: 10px 14px; border: 1.5px solid #ddd; border-radius: 8px; font-family: inherit;">{{ record.notes|default:'' }}</textarea>
+        </div>
+
+        <!-- Boutons -->
+        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+            <a href="{% url 'weekly_activity_list' %}" style="padding: 12px 28px; border: 2px solid #ddd; border-radius: 8px; text-decoration: none; color: #666; font-weight: 600;">إلغاء</a>
+            <button type="submit" style="padding: 12px 28px; background: #1a1a1a; color: #fff; border: 2px solid #b8860b; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 0.95rem;">
+                <i class="fas fa-save"></i> {% if mode == 'create' %}إضافة النشاط{% else %}حفظ التعديلات{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
